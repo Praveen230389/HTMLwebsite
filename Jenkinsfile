@@ -49,7 +49,7 @@ pipeline {
                     echo "$REG_PASS" | docker login -u "$REG_USER" --password-stdin &&
                     docker stop html-site || true &&
                     docker rm html-site || true &&
-                    docker run -d --name html-site -p 80:80 ${DOCKER_REGISTRY}:${BUILD_NUMBER}
+                    docker run -d --name html-site -p 8082:80 ${DOCKER_REGISTRY}:${BUILD_NUMBER}
                   '
                 """
               }
