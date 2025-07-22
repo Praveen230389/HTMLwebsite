@@ -3,10 +3,10 @@ pipeline {
 
   environment {
     SONAR_HOST_URL       = 'http://localhost:9000'
-    SONAR_AUTH_TOKEN     = credentials('sonar-token')            // Jenkins credential: Secret Text
-    DOCKER_REGISTRY      = 'mydockerhubuser/html-site'           // Example: DockerHub repo
-    REGISTRY_CREDENTIALS = 'dockerhub-credentials'               // Jenkins credential: Username + Password
-    SSH_CREDENTIAL_ID    = 'jenkins-ssh-key'                     // Jenkins credential: SSH private key
+    SONAR_AUTH_TOKEN     = credentials('sonar-token')
+    DOCKER_REGISTRY      = 'mydockerhubuser/html-site'
+    REGISTRY_CREDENTIALS = 'dockerhub-credentials'
+    SSH_CREDENTIAL_ID    = 'jenkins-ssh-key'
   }
 
   stages {
@@ -18,13 +18,15 @@ pipeline {
 
     stage('SonarQube Analysis') {
       steps {
-        withSonarQubeEnv('My SonarQube') {
-          sh """
-            sonar-scanner \
-              -Dsonar.projectKey=html-site \
-              -Dsonar.host.url=${SONAR_HOST_URL} \
-              -Dsonar.login=${SONAR_AUTH_TOKEN}
-          """
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+          withSonarQubeEnv('My SonarQube') {
+            sh '''
+              sonar-scanner \
+                -Dsonar.projectKey=html-site \
+                -Dsonar.host.url=$SONAR_HOST_URL \
+                -Dsonar.login=$SONAR_AUTH_TOKEN
+            '''
+          }
         }
       }
     }
@@ -53,7 +55,7 @@ pipeline {
       steps {
         script {
           def servers = [
-            'ubuntu@3.83.13.163',  // Example: Replace with real Docker EC2 public IPs
+            'ubuntu@3.83.13.163',
             'ubuntu@3.86.222.136',
             'ubuntu@3.91.44.187'
           ]
