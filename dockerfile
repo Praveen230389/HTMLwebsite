@@ -4,7 +4,7 @@ FROM nginx:alpine
 # Copy your HTML/CSS/JS into the nginx html directory
 COPY ./html/ /usr/share/nginx/html/
 
-# Expose port 80
+# Expose port 8082
 EXPOSE 80
 
 # Default command
